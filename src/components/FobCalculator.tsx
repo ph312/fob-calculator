@@ -226,6 +226,19 @@ export function FobCalculator({ auctions }: Props) {
 
   const hasAuctions = auctions.length > 0;
 
+  const sedanNeedsContainerBodyType =
+    category === "sedan" && containerBodyTypeId === null;
+  const minivanNeedsComposition = category === "minivan" && minivanCompositionId === null;
+
+  const containerHintMessage = sedanNeedsContainerBodyType
+    ? "👇 Выберите тип кузова для расчета контейнера"
+    : minivanNeedsComposition
+      ? "👇 Выберите состав контейнера"
+      : null;
+
+  const containerSectionHighlight = sedanNeedsContainerBodyType;
+  const minivanCompositionBlockHighlight = minivanNeedsComposition;
+
   return (
     <main className="mx-auto flex min-h-screen max-w-lg flex-col gap-7 px-4 py-10 sm:px-6">
       <header className="space-y-2 text-center sm:text-left">
@@ -312,16 +325,34 @@ export function FobCalculator({ auctions }: Props) {
             <span className="h-px flex-1 bg-slate-600/80" aria-hidden />
           </div>
 
-          <section className="space-y-4 rounded-2xl border border-slate-700/80 bg-[var(--surface)]/90 p-5 shadow-lg backdrop-blur sm:p-6">
+          {containerHintMessage ? (
+            <p className="text-emerald-400 text-sm mb-3">{containerHintMessage}</p>
+          ) : null}
+
+          <section
+            className={`space-y-4 rounded-2xl border bg-[var(--surface)]/90 p-5 shadow-lg backdrop-blur sm:p-6 transition-all ${
+              containerSectionHighlight
+                ? "animate-pulse border-emerald-500 ring-2 ring-emerald-500/30"
+                : "border-slate-700/80"
+            }`}
+          >
             {category === "minivan" ? (
-              <RadioSelectGroup
-                name="minivan_composition"
-                title="Состав (минивэн)"
-                value={minivanCompositionId}
-                onChange={(v) => setMinivanCompositionId(v)}
-                accent="emerald"
-                options={MINIVAN_COMPOSITION_OPTIONS.map((o) => ({ value: o.id, label: o.label }))}
-              />
+              <div
+                className={
+                  minivanCompositionBlockHighlight
+                    ? "animate-pulse rounded-xl border border-emerald-500 p-3 ring-2 ring-emerald-500/30 transition-all"
+                    : "transition-all"
+                }
+              >
+                <RadioSelectGroup
+                  name="minivan_composition"
+                  title="Состав (минивэн)"
+                  value={minivanCompositionId}
+                  onChange={(v) => setMinivanCompositionId(v)}
+                  accent="emerald"
+                  options={MINIVAN_COMPOSITION_OPTIONS.map((o) => ({ value: o.id, label: o.label }))}
+                />
+              </div>
             ) : (
               <>
                 <RadioSelectGroup
